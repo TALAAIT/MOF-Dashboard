@@ -3,8 +3,14 @@ import { fail } from '@sveltejs/kit';
 
 type Month = keyof typeof jsondata;
 
-type Node = { name : string, category: string};
-type Data = { 
+
+type Data = {
+  nodes : Array<Node>
+  links : Array<Link>
+}
+
+type Node = { id: string };
+type Link = { 
   source : string 
   target : string
   value : number
@@ -16,8 +22,8 @@ export function load() {
 
     let nodes :  Array<Node> = ['الإيرادات']
                          .concat(jsondata[month]['الإيرادات']['الموارد المالية العامة'])
-                         .map(v => {return {name : v, category : "Pattern"};});
-    let data : Array<Data> = ['الإيرادات']
+                         .map(v => {return {id : v};});
+    let links : Array<Link> = ['الإيرادات']
                           .flatMap(v => {return jsondata[month]['الإيرادات']['الموارد المالية العامة']
                                   .map((r, i) => {return {
                                                     source: v, 
@@ -25,18 +31,11 @@ export function load() {
                                                     value: jsondata[month]['الإيرادات']['نفقة الشهر'][i]};
                                                     });
                                             });
-
-    let options = {
-      "title": "الإيرادات",
-      "alluvial": {
-        "nodes": nodes,
-        "monochrome": true,
-        "nodePadding": 33
-      },
-      "height": "700px",
-      "theme": "g20",
+    let data = {
+      nodes : nodes, 
+      links : links
     }
-    return {data: data, options: options}
+    return {data: data}
 }
 
 function firstDayInMonth(date : string) : string {
