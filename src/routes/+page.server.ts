@@ -3,18 +3,40 @@ import { fail } from '@sveltejs/kit';
 
 type Month = keyof typeof jsondata;
 
-type Data = {
-  nodes : Array<ID>
-  links : Array<Link>
-};
-type ID = { id : string};
-type Link = { 
+type Node = { name : string, category: string};
+type Data = { 
   source : string 
   target : string
   value : number
 };
 
-export function load({params}) {
+export function load() {
+
+    let month : Month = "1"; 
+
+    let nodes :  Array<Node> = ['الإيرادات']
+                         .concat(jsondata[month]['الإيرادات']['الموارد المالية العامة'])
+                         .map(v => {return {name : v, category : "Pattern"};});
+    let data : Array<Data> = ['الإيرادات']
+                          .flatMap(v => {return jsondata[month]['الإيرادات']['الموارد المالية العامة']
+                                  .map((r, i) => {return {
+                                                    source: v, 
+                                                    target: r,
+                                                    value: jsondata[month]['الإيرادات']['نفقة الشهر'][i]};
+                                                    });
+                                            });
+
+    let options = {
+      "title": "الإيرادات",
+      "alluvial": {
+        "nodes": nodes,
+        "monochrome": true,
+        "nodePadding": 33
+      },
+      "height": "700px",
+      "theme": "g20",
+    }
+    return {data: data, options: options}
 }
 
 function firstDayInMonth(date : string) : string {
@@ -34,21 +56,6 @@ export const actions = {
     const startDate : string = formData.get("startDate");
     const endDate : string = formData.get("endDate");
 
-
-    let month : Month = parseInt(startDate.split("-")[1]).toString() 
-
-    let nodes :  Array<ID> = ['الإيرادات']
-                         .concat(jsondata[month].revenues['الموارد المالية العامة'])
-                         .map(v => {return {id : v};});
-    let links : Array<Link> = ['الإيرادات']
-                          .flatMap(v => {return jsondata[month].revenues['الموارد المالية العامة']
-                                  .map((r, i) => {return {
-                                                    source: v, 
-                                                    target: r,
-                                                    value: jsondata[month].revenues['نفقة الشهر'][i]};
-                                                    });
-                                            });
-    let data : Data = {nodes : nodes, links: links};
 
     if (!validDateRange(startDate, endDate)) {
       return fail(422, {
