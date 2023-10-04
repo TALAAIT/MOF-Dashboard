@@ -1,0 +1,63 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+enum category {
+  Revenue
+  Expense
+}
+
+enum revenue {
+  Oil
+  Other
+  PreviousYears
+}
+
+enum expense {
+  Salaries
+  Operational
+  Development
+  Support
+}
+
+model Category {
+  type  category
+  name  String
+  value Int
+  date  DateTime
+  Revenue        Revenue[]
+  Expense        Expense[]
+
+  @@id([date, type])
+}
+
+model Revenue {
+  type  revenue
+  name  String
+  value Int
+
+  category      Category @relation(fields: [date, category_type], references: [date, type])
+  date  DateTime
+  category_type category
+
+  @@id([date, type])
+}
+
+model Expense {
+  type  expense
+  name  String
+  value Int
+
+  category      Category @relation(fields: [date, category_type], references: [date, type])
+  date  DateTime
+  category_type category
+
+  @@id([date, type])
+}
