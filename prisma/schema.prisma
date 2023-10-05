@@ -30,7 +30,7 @@ enum expense {
 model Category {
   type  category
   name  String
-  value Int
+  value BigInt
   date  DateTime
   Revenue        Revenue[]
   Expense        Expense[]
@@ -41,7 +41,7 @@ model Category {
 model Revenue {
   type  revenue
   name  String
-  value Int
+  value BigInt
 
   category      Category @relation(fields: [date, category_type], references: [date, type])
   date  DateTime
@@ -53,7 +53,7 @@ model Revenue {
 model Expense {
   type  expense
   name  String
-  value Int
+  value BigInt
 
   category      Category @relation(fields: [date, category_type], references: [date, type])
   date  DateTime

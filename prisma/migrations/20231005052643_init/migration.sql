@@ -11,7 +11,7 @@ CREATE TYPE "expense" AS ENUM ('Salaries', 'Operational', 'Development', 'Suppor
 CREATE TABLE "Category" (
     "type" "category" NOT NULL,
     "name" TEXT NOT NULL,
-    "value" INTEGER NOT NULL,
+    "value" BIGINT NOT NULL,
     "date" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Category_pkey" PRIMARY KEY ("date","type")
@@ -21,7 +21,7 @@ CREATE TABLE "Category" (
 CREATE TABLE "Revenue" (
     "type" "revenue" NOT NULL,
     "name" TEXT NOT NULL,
-    "value" INTEGER NOT NULL,
+    "value" BIGINT NOT NULL,
     "date" TIMESTAMP(3) NOT NULL,
     "category_type" "category" NOT NULL,
 
@@ -32,7 +32,7 @@ CREATE TABLE "Revenue" (
 CREATE TABLE "Expense" (
     "type" "expense" NOT NULL,
     "name" TEXT NOT NULL,
-    "value" INTEGER NOT NULL,
+    "value" BIGINT NOT NULL,
     "date" TIMESTAMP(3) NOT NULL,
     "category_type" "category" NOT NULL,
 
