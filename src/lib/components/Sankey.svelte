@@ -8,6 +8,7 @@
   import Text from "$lib/components/Text.svelte";
 
   const { data, width, height } = getContext('LayerCake');
+  
 
   /** @type {Function} [colorLinks=d => 'rgba(0, 0, 0, .2)'] - A function to return a color for the links. */
   export let colorLinks = d => 'rgba(0, 0, 0, .2)';
@@ -42,6 +43,7 @@
   export let nodeAlign = Sankey.sankeyLeft;
 
   const formatter = Intl.NumberFormat(locale, {notation: "compact"});
+
 
   $: sankey = Sankey.sankey()
     .nodeAlign(nodeAlign)

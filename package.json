@@ -9,6 +9,7 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
   },
+  "type": "module",
   "devDependencies": {
     "@carbon/charts-svelte": "^1.13.4",
     "@carbon/layout": "^11.19.0",
@@ -34,8 +35,5 @@
     "exceljs": "^4.3.0",
     "fs": "^0.0.1-security",
     "layercake": "^8.0.0"
-  },
-  "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   }
 }

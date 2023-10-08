@@ -1,9 +1,12 @@
-<script>
+<script lang="ts">
   import { LayerCake, Svg } from 'layercake';
 
   import Sankey from '$lib/components/Sankey.svelte';
+  import { sankey, sankeyRight } from 'd3-sankey';
 
   export let data;
+
+  
 </script>
 
 <style>
@@ -22,13 +25,14 @@
 <div class="chart-container">
   <LayerCake
     debug={true}
-    {data}
+    data={data}
   >
     <Svg>
       <Sankey
         colorNodes={d => '#18AAB4'}
         colorLinks={d => '#15C67A'}
         colorText={d => '#05747E'}
+        nodeAlign={sankeyRight}
       />
     </Svg>
   </LayerCake>

@@ -1,17 +1,16 @@
 import { fail } from '@sveltejs/kit';
 import { PrismaClient, category, revenue, expense} from '@prisma/client';
-import type { Category } from '@prisma/client';
+import type { Category, Revenue,} from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-
-
 type Data = {
-  nodes : Array<Node>
-  links : Array<Link>
+  links : Link[]
+  nodes : Node[]
 }
 
-type Node = { id: string };
+type Node = { id: string}
+
 type Link = { 
   source : string 
   target : string
@@ -27,64 +26,74 @@ export async function load() {
 
     let month : Date = firstDayInMonth(1); 
 
+
     const monthRevenue = await prisma.category.findUnique({
-      select: {
-        date : month,
-        type : category.Revenue
+      where : {
+        key : {
+          date : month,
+          type : category.Revenue
+        }
+      }, 
+      include : {
+        Revenue: true
       }
     });
 
-    const monthRevenues = await prisma.revenue.findMany({
-      select : {
-        date : monthRevenue.date,
+    const monthExpense = await prisma.category.findUnique({
+      where : {
+        key : {
+          date : month,
+          type : category.Expense
+        }
+      }, 
+      include : {
+        Expense: true
       }
     });
 
-    let nodes :  Array<Node> = [monthRevenue.name] 
-                              .concat(monthRevenues.map(c => c.name))
-                              .map(v => {return {id : v};});
+    let nodes : Node[] = [monthExpense?.name]
+                    .concat(monthExpense?.Expense
+                            .map(c => c.name))
+                    .map(c => {return {id : c};});
 
-    let links : Array<Link> = [monthRevenue.name]
-                          .flatMap(v => monthRevenues.map(c => {return 
-                                                          {
-                                                            source : v,
-                                                            target : c.name,
-                                                            value : c.value
-                          };}));
-    let data = {
-      nodes : nodes, 
-      links : links
-    }
-    return {data: data}
-}
+    let links : Link[] = monthExpense?.Expense
+                        .map(c => {return {source: monthExpense.name,
+                                           target: c.name,
+                                            value: Number(c.value)
+                                    };});
 
-
-function validDateRange(d1 : string, d2 : string) : boolean {
-  let t1 = new Date(d1).getTime();
-  let t2 = new Date(d2).getTime();
-  return t1 < t2;
-}
-
-export const actions = {
-  default: async ({request}) => {
-
-    const formData = await request.formData();
-    const startDate : string = formData.get("startDate");
-    const endDate : string = formData.get("endDate");
-
-
-    if (!validDateRange(startDate, endDate)) {
-      return fail(422, {
-				error: "Invalid date range.",
-      });
-    }
+    let data : Data = {links: links, nodes: nodes};
     
-    return {
-      data : data,
-      startDate : firstDayInMonth(startDate), 
-      endDate : firstDayInMonth(endDate)
-    }
-
-
-  }
+    return {data: data};
 }
+
+//g
+//gfunction validDateRange(d1 : string, d2 : string) : boolean {
+//g  let t1 = new Date(d1).getTime();
+//g  let t2 = new Date(d2).getTime();
+//g  return t1 < t2;
+//g}
+//g
+//gexport const actions = {
+//g  default: async ({request}) => {
+//g
+//g    const formData = await request.formData();
+//g    const startDate : string = formData.get("startDate");
+//g    const endDate : string = formData.get("endDate");
+//g
+//g
+//g    if (!validDateRange(startDate, endDate)) {
+//g      return fail(422, {
+//g				error: "Invalid date range.",
+//g      });
+//g    }
+//g    
+//g    return {
+//g      data : data,
+//g      startDate : firstDayInMonth(startDate), 
+//g      endDate : firstDayInMonth(endDate)
+//g    }
+//g
+//g
+//g  }
+//g}
