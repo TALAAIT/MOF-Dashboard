@@ -19,9 +19,6 @@
   /** @type {Function} [colorText=d => '#263238'] - A function to return a color for each text label. */
   export let colorText = d => '#263238';
 
-  export let nodeCallback = (i) => console.log(`node pressed ${i}`);
-  export let linkCallback = (i) => console.log(`link pressed ${i}`);
-  export let textCallback = (i) => console.log(`text pressed ${i}`);
 
   /** @type {Number} [nodeWidth=5] - The width of each node, in pixels, passed to [`sankey.nodeWidth`](https://github.com/d3/d3-sankey#sankey_nodeWidth). */
   export let nodeWidth : number = 25;
@@ -69,12 +66,12 @@
         fill='none'
         stroke={colorLinks(d)}
         stroke-width={d.width} 
-        on:click={linkCallback(link(d))}
         />
     {/each}
   </g>
   <g class='rect-group'>
     {#each sankeyData.nodes as d, i}
+      <a href={d.x0 < $width / 2 ? "./.." : `./${d.type}`}>
       <rect
         x={d.x0 < $width / 2 ? d.x0 + 3 : d.x0 - 3}
         y={d.y0 - 10/2}
@@ -82,8 +79,8 @@
         height={d.y1 - d.y0 > 15 ? d.y1 - d.y0 + 10 : 20}
         width={d.x1 - d.x0}
         fill={colorNodes(d)}
-        on:click={nodeCallback(d.y0)}
         />
+      </a>
        <Text  x={d.x0 < $width / 4 ? d.x1 + textPadding: d.x0 - textPadding }
               y={(d.y1 + d.y0) / 2}
               {fontSize}

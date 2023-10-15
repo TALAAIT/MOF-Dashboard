@@ -1,12 +1,18 @@
 <script lang="ts">
   import { LayerCake, Svg } from 'layercake';
+  import {rootNode, startDate} from '$lib/stores';
+  import {PrismaClient} from '@prisma/client/edge'
+  import type {TableName} from '$lib/prisma';
 
   import Sankey from '$lib/components/Sankey.svelte';
   import { sankey, sankeyRight } from 'd3-sankey';
 
   export let data;
 
-  
+  const prisma = new PrismaClient();
+
+  function nextNode(name : string) : void {
+  }
 </script>
 
 <style>
@@ -32,7 +38,6 @@
         colorNodes={d => '#18AAB4'}
         colorLinks={d => '#15C67A'}
         colorText={d => '#05747E'}
-        nodeAlign={sankeyRight}
       />
     </Svg>
   </LayerCake>

@@ -15,6 +15,7 @@
     "@carbon/layout": "^11.19.0",
     "@sveltejs/adapter-auto": "^2.0.0",
     "@sveltejs/kit": "^1.20.4",
+    "@types/lodash": "^4.14.199",
     "@types/node": "^20.8.2",
     "bun-types": "^1.0.3",
     "d3-cloud": "^1.2.7",
@@ -34,6 +35,11 @@
     "d3-sankey": "^0.12.3",
     "exceljs": "^4.3.0",
     "fs": "^0.0.1-security",
-    "layercake": "^8.0.0"
-  }
+    "layercake": "^8.0.0",
+    "lodash": "^4.17.21"
+  },
+"prisma": {
+  "seed": "node prisma/seed.js"
+}
+
 }

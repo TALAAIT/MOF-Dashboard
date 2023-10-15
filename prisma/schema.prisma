@@ -9,55 +9,96 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-enum category {
-  Revenue
-  Expense
+
+enum Category {
+  revenue
+  expense
 }
 
-enum revenue {
-  Oil
-  Other
-  PreviousYears
+enum Revenue {
+  oil
+  other_revenues
+  previous_years
 }
 
-enum expense {
-  Salaries
-  Operational
-  Development
-  Support
+enum Expense {
+  salaries
+  operational
+  development
+  support
 }
 
-model Category {
-  type  category
-  name  String
-  value BigInt
-  date  DateTime
-  Revenue        Revenue[]
-  Expense        Expense[]
+enum Oil {
+  oil_sales
+  oil_taxes
+}
+
+enum OtherRevenues {
+  taxes
+  customs
+  telecommunications
+  libyan_central_bank
+  fuel
+  other
+}
+
+model category {
+  type    Category
+  name    String
+  value   BigInt
+  date    DateTime
+  revenue revenue[]
+  expense expense[]
 
   @@id([date, type], name: "key")
 }
 
-model Revenue {
-  type  revenue
+model revenue {
+  type  Revenue
   name  String
   value BigInt
 
-  category      Category @relation(fields: [date, category_type], references: [date, type])
-  date  DateTime
-  category_type category
+  category       category         @relation(fields: [date, parent_type], references: [date, type])
+  date           DateTime
+  parent_type  Category
+  oil            oil[]
+  other_revenues other_revenues[]
 
   @@id([date, type], name: "key")
 }
 
-model Expense {
-  type  expense
+model expense {
+  type  Expense
   name  String
   value BigInt
 
-  category      Category @relation(fields: [date, category_type], references: [date, type])
-  date  DateTime
-  category_type category
+  category      category @relation(fields: [date, parent_type], references: [date, type])
+  date          DateTime
+  parent_type Category
+
+  @@id([date, type], name: "key")
+}
+
+model oil {
+  type  Oil
+  name  String
+  value BigInt
+
+  revenue      revenue  @relation(fields: [date, parent_type], references: [date, type])
+  date         DateTime
+  parent_type Revenue
+
+  @@id([date, type], name: "key")
+}
+
+model other_revenues {
+  type  OtherRevenues
+  name  String
+  value BigInt
+
+  revenue      revenue  @relation(fields: [date, parent_type], references: [date, type])
+  date         DateTime
+  parent_type Revenue
 
   @@id([date, type], name: "key")
 }
