@@ -6,6 +6,7 @@
   import { getContext } from 'svelte';
   import * as Sankey from 'd3-sankey';
   import Text from "$lib/components/Text.svelte";
+  import { page } from '$app/stores';
 
   const { data, width, height } = getContext('LayerCake');
   
@@ -41,6 +42,7 @@
 
   const formatter = Intl.NumberFormat(locale, {notation: "compact"});
 
+  
 
   $: sankey = Sankey.sankey()
     .nodeAlign(nodeAlign)
@@ -71,7 +73,7 @@
   </g>
   <g class='rect-group'>
     {#each sankeyData.nodes as d, i}
-      <a href={d.x0 < $width / 2 ? "./.." : `./${d.type}`}>
+      <a href={(d.x0 < $width / 2 ? "./.." : `./${d.type}`).concat(`?${$page.url.searchParams.toString()}`)}>
       <rect
         x={d.x0 < $width / 2 ? d.x0 + 3 : d.x0 - 3}
         y={d.y0 - 10/2}

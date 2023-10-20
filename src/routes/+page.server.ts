@@ -1,5 +1,4 @@
 import type { Actions } from "@sveltejs/kit";
-import prisma from '$lib/prisma'
 import { json } from '@sveltejs/kit';
 import { getStores} from "$app/stores";
 import {get} from "svelte/store";

@@ -1,48 +1,44 @@
 import {redirect, type Page } from '@sveltejs/kit';
-import prisma, {isTableName, type TableName} from '$lib/prisma';
+import {isTableName, type TableName} from '$lib/server/prisma';
+import {getSankeyData, type SankeyData} from '$lib/server/database'
 
 
-type Node = { id: string, type: TableName}
-
-type Link = { 
-  source : string 
-  target : string
-  value : number
-};
-
+const date = new Date();
+const currentMonth = date.getMonth() + 1;
+const currentYear = date.getFullYear()
 
 export const trailingSlash = 'always';
-export async function load({ params } : Page) {
+export async function load({ params, url } : Page) {
   console.log(params);
-  let date = new Date('2023-01-01');
+  console.log(url);
+  let startDate = new Date(url.searchParams.get('startDate') || firstDayInMonth(1,currentYear));
+  let endDate = new Date(url.searchParams.get('endDate') || firstDayInMonth(currentMonth,currentYear));
+
+  console.log(startDate);
+  console.log(endDate);
+
+
   let path : string[] = params.path.split('/')
                                   .filter((value) => value.length > 0);
   let [root, child] : string[] = path.slice(-2);
 
-  let include = Object.fromEntries([[child, true]]);
   if(!isTableName(child)) {
-    throw redirect(304, "./.");
+    throw redirect(304, `./.?${url.searchParams.toString()}`);
   }
-  const data = await prisma[root].findUnique({
-    where : {
-      key : {
-        date : date,
-        type : child
-        }
-      },
-    include : include
-  });
+  const data = await getSankeyData(root, child, startDate, endDate);
 
-  let nodes : Node[] = [[data.name, data.type]]
-                      .concat(data[child].map(v => [v.name, v.type]))
-                      .map(([name, type]) => {return {id: name, type: type};});
-  
-  let links : Link[] = data[child].map(v => {
-    return {
-      source : data.name,
-      target : v.name,
-      value : Number(v.value)
-    };
-  });
-  return { data : {links : links, nodes : nodes}, title : data.name};
+ return { data : data, title : 'title'};
 }
+
+
+function firstDayInMonth(month : number, year : number) : string {
+  month = month > 0 ? (month < 13 ? month : 12) : 1;
+  month = Math.max(Math.min(month, 12), 1);
+  return `${year > 1970 ? year : 1970}-${String(month).padStart(2,'0')}-01`
+}
+
+
+
+
+
+
