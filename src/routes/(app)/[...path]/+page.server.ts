@@ -1,6 +1,6 @@
 import {redirect, type Page } from '@sveltejs/kit';
 import {isTableName, type TableName} from '$lib/server/prisma';
-import {getSankeyData, type SankeyData} from '$lib/server/database'
+import {getPageTitle, getSankeyData, type SankeyData} from '$lib/server/database'
 
 
 const date = new Date();
@@ -9,15 +9,9 @@ const currentYear = date.getFullYear()
 
 export const trailingSlash = 'always';
 export async function load({ params, url } : Page) {
-  console.log(params);
-  console.log(url);
   let startDate = new Date(url.searchParams.get('startDate') || firstDayInMonth(1,currentYear));
   let endDate = new Date(url.searchParams.get('endDate') || firstDayInMonth(currentMonth,currentYear));
-
-  console.log(startDate);
-  console.log(endDate);
-
-
+  
   let path : string[] = params.path.split('/')
                                   .filter((value) => value.length > 0);
   let [root, child] : string[] = path.slice(-2);
@@ -27,7 +21,9 @@ export async function load({ params, url } : Page) {
   }
   const data = await getSankeyData(root, child, startDate, endDate);
 
- return { data : data, title : 'title'};
+  const title = await getPageTitle(root, child);
+
+  return { data : data, title};
 }
 
 

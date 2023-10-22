@@ -2,29 +2,42 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 
-	// Skeleton Features
-	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
+  import type { PageData } from '../$types';
+	
+  // Skeleton Features
+	import { AppShell, AppBar, type DrawerSettings } from '@skeletonlabs/skeleton';
 	import { Drawer, getDrawerStore, initializeStores } from '@skeletonlabs/skeleton';
 
-  initializeStores();
-
-  const drawerStore = getDrawerStore();
 	// Local Features
   import Filter from '$lib/components/Filter.svelte';
-
-	// Stylesheets
+  import Navigation from '$src/lib/components/Navigation.svelte';
+	
+  // Stylesheets
 	import '$src/app.postcss';
+  
+  initializeStores();
+  const drawerStore = getDrawerStore();
 
-	function drawerOpen(): void {
-		drawerStore.open({});
+  const filterSettings : DrawerSettings = { id : 'filter' };
+  const navigationSettings : DrawerSettings = { id : 'navigation' };
+
+
+	function drawerOpen(settings : DrawerSettings) {
+		return (() => drawerStore.open(settings));
 	}
+  export let data;
+
 
 	// Reactive Properties
 	$: classesSidebarLeft = $page.url.pathname === '/' ? 'w-0' : 'w-0 lg:w-64';
 </script>
 
 <Drawer>
-<Filter />
+  {#if $drawerStore.id === "filter"}  
+    <Filter />
+  {:else if $drawerStore.id === "navigation"}
+    <Navigation data={data.accordionList} />
+  {/if}
 </Drawer>
 
 
@@ -41,10 +54,10 @@
     <button type="button" class="btn-icon" >
       Home
     </button>
-    <button type="button" class="btn-icon" on:click={drawerOpen}>
+    <button type="button" class="btn-icon" on:click={drawerOpen(filterSettings)}>
       Filter
     </button>
-    <button type="button" class="btn-icon ">
+    <button type="button" class="btn-icon " on:click={drawerOpen(navigationSettings)}>
       List
     </button>
   </svelte:fragment>

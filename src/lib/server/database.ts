@@ -1,5 +1,6 @@
 import prisma, {isTableName, type TableName} from '$lib/server/prisma';
-import { sortBy, zipWith } from 'lodash';
+import { merge, sortBy, zipWith } from 'lodash';
+import { get } from 'svelte/store';
 
 type Node = { id: string, type: TableName};
 
@@ -14,13 +15,47 @@ export type SankeyData = {
   nodes : Node[]
 };
 
+
+async function getAccordionLevel(root : string) {
+  let data = await prisma[root].findMany({
+    select: {
+      name: true,
+      type: true
+    },
+    distinct: ['type', 'name'],
+  });
+  return data;
+}
+
+export async function getAccordionList(root : string) {
+  if (isTableName(root)) {
+    let data = await getAccordionLevel(root)
+    data = data.map(v => merge(v, {parent : root}));
+    for (const {type} of data) {
+      return data.concat(await getAccordionList(type))
+    }
+  }
+  return [] 
+}
+
+export async function getPageTitle(root : string, 
+                                   child : string) : Promise<string> {
+  const { name } = await prisma[root].findFirst({
+   where : {
+    type : child
+   },
+    select : {
+      name : true
+    }
+  });
+  return name;
+}
+
 export async function getSankeyData(root : string, 
                               child : string, 
                               startDate : Date,
                               endDate : Date) : Promise<SankeyData> {
 
-  console.log('startDate: ', startDate)
-  console.log('endDate: ', endDate)
   
   let include = Object.fromEntries([[child, true]]);
 
@@ -84,10 +119,6 @@ export async function getSankeyData(root : string,
       startLinks = sortBy(startLinks, e => e.target )
       endLinks = sortBy(endLinks, e => e.target )
  
- 
-      console.log('startLinks: ', startLinks)
-      console.log('endLinks: ', endLinks)
- 
       links = zipWith<Link, Link, Link>(endLinks, startLinks, (e,s) => {
         return {
           source: e.source,
@@ -95,8 +126,6 @@ export async function getSankeyData(root : string,
           value: Number(e?.value - s?.value)
         };
       });
-      console.log(nodes)
-      console.log(links)
       return {links: links, nodes: nodes};
   }
 
