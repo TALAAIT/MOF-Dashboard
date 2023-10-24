@@ -67,7 +67,8 @@
         d={link(d)}
         fill='none'
         stroke={colorLinks(d)}
-        stroke-width={d.width} 
+        stroke-width={d.width}
+        on:mouseover={() => console.log(sankeyData.nodes[i].type)}
         />
     {/each}
   </g>

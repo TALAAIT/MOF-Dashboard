@@ -20,9 +20,10 @@
     let parent = parentItem[0].parent;
     return `${getPath(parent)}/${target}`;
   }
+  console.log(data.map(d => d.type));
 </script>
 
-<Accordion>
+<Accordion disabled={!data.map(d => d.parent).includes(root)}>
   {#each data.filter(v => v.parent === root) as slot }
     <AccordionItem id={slot.type}>
       <svelte:fragment slot="summary">
@@ -31,7 +32,7 @@
           {slot.name}
         </a>
       </svelte:fragment>
-      <svelte:fragment slot="content">
+      <svelte:fragment slot="content" >
         <svelte:self {data} root={slot.type} />
       </svelte:fragment>`
     </AccordionItem>

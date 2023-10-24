@@ -14,7 +14,8 @@
 	
   // Stylesheets
 	import '$src/app.postcss';
-  
+    import { goto } from '$app/navigation';
+
   initializeStores();
   const drawerStore = getDrawerStore();
 
@@ -28,8 +29,6 @@
   export let data;
 
 
-	// Reactive Properties
-	$: classesSidebarLeft = $page.url.pathname === '/' ? 'w-0' : 'w-0 lg:w-64';
 </script>
 
 <Drawer>
@@ -51,7 +50,7 @@
   </svelte:fragment>
 	{$page.data.title}
 	<svelte:fragment slot="trail">
-    <button type="button" class="btn-icon" >
+    <button type="button" class="btn-icon" on:click={() => goto('/category')}>
       Home
     </button>
     <button type="button" class="btn-icon" on:click={drawerOpen(filterSettings)}>
