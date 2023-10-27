@@ -7,17 +7,20 @@
   // Skeleton Features
 	import { AppShell, AppBar, type DrawerSettings } from '@skeletonlabs/skeleton';
 	import { Drawer, getDrawerStore, initializeStores } from '@skeletonlabs/skeleton';
-
-	// Local Features
-  import Filter from '$lib/components/Filter.svelte';
-  import Navigation from '$src/lib/components/Navigation.svelte';
+  import { Modal, getModalStore } from '@skeletonlabs/skeleton';
+  import type { ModalSettings, ModalComponent, ModalStore } from '@skeletonlabs/skeleton';
 	
+  // Local Features
+  import Filter from '$lib/components/Filter.svelte';
+  import Navigation from '$lib/components/Navigation.svelte';
+  
   // Stylesheets
 	import '$src/app.postcss';
     import { goto } from '$app/navigation';
 
   initializeStores();
   const drawerStore = getDrawerStore();
+  const modalStore = getModalStore();
 
   const filterSettings : DrawerSettings = { id : 'filter' };
   const navigationSettings : DrawerSettings = { id : 'navigation' };
@@ -27,9 +30,8 @@
 		return (() => drawerStore.open(settings));
 	}
   export let data;
-
-
 </script>
+
 
 <Drawer>
   {#if $drawerStore.id === "filter"}  
@@ -39,7 +41,7 @@
   {/if}
 </Drawer>
 
-
+<Modal/>
 
 <AppShell regionPage="relative" slotPageHeader="sticky top-0 z-10">
 <AppBar> 

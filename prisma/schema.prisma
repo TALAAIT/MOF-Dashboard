@@ -5,6 +5,12 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator client2 {
+  provider             = "prisma-client-py"
+  interface            = "asyncio"
+  recursive_type_depth = 5
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -41,6 +47,16 @@ enum OtherRevenues {
   fuel
   other
 }
+
+enum Salaries {
+  legislature
+  sovereign
+  defense
+  service
+  local
+  productive
+}
+
 
 model category {
   type    Category
@@ -99,6 +115,18 @@ model other_revenues {
   revenue      revenue  @relation(fields: [date, parent_type], references: [date, type])
   date         DateTime
   parent_type Revenue
+
+  @@id([date, type], name: "key")
+}
+
+model salaries {
+  type  Salaries
+  name  String
+  value BigInt
+
+  expense      expense  @relation(fields: [date, parent_type], references: [date, type])
+  date         DateTime
+  parent_type Expense
 
   @@id([date, type], name: "key")
 }

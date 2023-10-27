@@ -5,7 +5,9 @@
   import Bar from '$lib/components/Bar.svelte';
   import AxisX from '$lib/components/AxisX.html.svelte';
   import AxisY from '$lib/components/AxisY.html.svelte';
-
+  import { hoverData } from '$lib/stores';
+    import Tooltip from './components/Tooltip.svelte';
+  
   export let data;
 
   console.log({data});
@@ -24,11 +26,11 @@
   }
 </style>
 
-<div class="chart-container">
+<div class="chart-container m-10"
+  on:mouseleave={()=>hoverData.set(null)}>
   <LayerCake
     ssr={true}
     percentRange={true}
-    padding={{ top: 0, right: 20, bottom: 20, left: 35 }}
     x='value'
     y='month'
     yScale={scaleBand().paddingInner(0.05).round(true)}
@@ -48,5 +50,7 @@
       <Bar/>
     </ScaledSvg>
   </LayerCake>
-
 </div>
+{#if $hoverData}
+  <Tooltip data={$hoverData} />
+{/if}

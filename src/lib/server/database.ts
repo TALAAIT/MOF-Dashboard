@@ -110,7 +110,6 @@ export async function getSankeyData(root : string,
     let a_sorted = sortBy<Link>(a, a => a.target);
     let b_sorted = sortBy<Link>(b, b => b.target);
     return zipWith<Link, Link, Link>(a_sorted,b_sorted, (x,y) => {
-      console.log(y);
       return {
         source : x.source,
         target : x.target,

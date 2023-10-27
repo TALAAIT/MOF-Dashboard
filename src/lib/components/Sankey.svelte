@@ -7,11 +7,16 @@
   import * as Sankey from 'd3-sankey';
   import Text from "$lib/components/Text.svelte";
   import { page } from '$app/stores';
-
-  const { data, width, height } = getContext('LayerCake');
+  import { Modal, getModalStore } from '@skeletonlabs/skeleton';
+  import type { ModalSettings, ModalComponent, ModalStore } from '@skeletonlabs/skeleton';
+  import ModalIFrame from './ModalIFrame.svelte';
   
+  const { data, width, height } = getContext('LayerCake');
 
-  /** @type {Function} [colorLinks=d => 'rgba(0, 0, 0, .2)'] - A function to return a color for the links. */
+  const modalStore = getModalStore();
+  const modalIFrame: ModalComponent = { ref: ModalIFrame };
+ 
+ /** @type {Function} [colorLinks=d => 'rgba(0, 0, 0, .2)'] - A function to return a color for the links. */
   export let colorLinks = d => 'rgba(0, 0, 0, .2)';
 
   /** @type {Function} [colorNodes=d => '#333'] - A function to return a color for each node. */
@@ -68,7 +73,14 @@
         fill='none'
         stroke={colorLinks(d)}
         stroke-width={d.width}
-        on:mouseover={() => console.log(sankeyData.nodes[i].type)}
+        on:click={() => {
+          const modalSettings = {
+            type : 'component',
+            component : modalIFrame, 
+            meta : {url : `./${sankeyData.nodes[i].type}/details`}
+          };
+          modalStore.trigger(modalSettings);
+        }}
         />
     {/each}
   </g>
